@@ -1,4 +1,4 @@
-use std::{io::Error, ops::{Add, Mul, Div, Sub, Rem, RemAssign}};
+use std::{io::Error, ops::{Add, Div, Mul, MulAssign, Rem, RemAssign, Sub}};
 
 const DEFAULT: f32 = 0.0;
 const NEGATION: f32 = -1.0;
@@ -36,6 +36,14 @@ impl Mul<f32> for Vector3 {
             z: _rhs * self.z,
             pad: self.pad
         };
+    }
+}
+
+impl MulAssign<f32> for Vector3 {
+    fn mul_assign(&mut self, _rhs: f32) {
+        self.x *= _rhs;
+        self.y *= _rhs;
+        self.z *= _rhs;
     }
 }
 
@@ -167,6 +175,13 @@ impl Vector3 {
     /// Returns the square magnitude: Sum of the squares of each axis. Takes a mut ref of self.
     pub fn square_magnitude_mut(&mut self) -> f32 {
         return self.x * self.x + self.y * self.y + self.z * self.z;
+    }
+
+    /// Scales `other: &Vector3` by `scalar: f32` then adds the resulting vector to `self`.
+    pub fn add_scaled_vector(&mut self, other: &Vector3, scalar: f32) {
+        self.x += other.x * scalar;
+        self.y += other.y * scalar;
+        self.x += other.z * scalar;
     }
 
     pub fn update_by_vector3(&mut self, other: Vector3) {

@@ -112,6 +112,10 @@
 
 ### Vector Integral Calculus
 
+- .<sub>p</sub> is the velocity of p measured a one instant in time
+- ..<sub>p</sub> is the acceleration of p measured in the same way, one instant in time
+- Second-Order Taylor expansion for the position of a particle
+- `p` represents the initial position
 - p^i = p + .<sub>p</sub>t
   + matrix1x3(
     p<sub>x</sub> + .<sub>p<sub>x</sub></sub>t
@@ -120,3 +124,74 @@
   )
   + `position += velocity * t;`
   + `position.addScaledVector(velocity, t);`
+
+## Laws of Motion
+
+- *Point Masses* is an object that has mass, but no size, can't rotate, but otherwise moves around normally
+  - In game Physics, these are usually referred to as *Particals*
+  
+### The Particle
+
+- Has a *position* but no orientation as in we only care where it is going
+  - Think a bullet where we don't care about the direction the bullet is pointing, but rather we care about the direction it is traveling
+- Each *Particle* has various properties: position, velocity, acceleration, for starters
+
+### The First Two Laws
+
+1. An object continues with a constant velocity unless a force acts unpon it.
+2. A force acting on an object produces acceleration that is proportional to the object's mass.
+
+#### The First Law
+
+- The first law states that is no other force is acting on an object that is already in motion,
+  - then it will continue moving forever
+- *Damping* will be used to act as the drag without envolving complicated calculations and rounding errors
+
+#### The Second Law
+
+- *Velocity* and *Position* keep track of a quantity frame to frame
+    - these values change indirectly
+- *Acceleration* can be different from one moment to another due to forces that are applied
+
+### The Force Equations
+
+- f = ma = m..<sub>p</sub>
+- This can be manipulated to give use the acceleration in terms of the force:
+    - ..<sub>p</sub> = (1 / m) * f
+        - Where ..<sub>p</sub> = ( (d^2) * p) / (d * (t^2) ) = a
+        - Where a = lim<sub>delta_time -> 0</sub> * (dv) / (dt)
+
+### Movmentum And Velocity
+
+- *Momentum* is the product of velocity and mass
+- mass is normally constant
+- Rotating objects can change the way their mass is distributed, which can affect rotational speed
+
+### The Force of Gravity
+
+- f = G * ( (mass_one * mass_two) / (r^2) ) where r is the distance between the masses
+- Assuming that r is such a large number that small changes in elevation to earth do not matter,
+    - also that the mass of earth doesn't change
+    - f = m*g
+- Gravity can be defined by: g = G * ( (mass_earth) / r^2 )
+    - approximated to 9.807 meters per second squared
+
+### The Value of `g`
+
+- Games often use a higher value for Gravity
+- This engine will tune the `g` value on an object-by-object Basis
+- g = [ 0 -g 0 ] because the Y axis represents up and down in the game world
+
+### The Integrator
+
+- Consists of two parts
+    1. update the position of the object
+        - depends on the velocity and acceleration
+    2. update its velocity
+        - depends only on the acceleration
+- This is updated on a time schedule, common to use the delta time between frames,
+    - better to decouple the physics from the frame rate!!!!
+- Probably wise to use the System Clock to get a more consistent time
+    - [Rust-Docs_Instant](https://doc.rust-lang.org/std/time/struct.Instant.html)
+- Velocity: .i<sub>p</sub> = .<sub>p</sub>d^t + ..<sub>p</sub>t
+    - where d is the damping for the object is now the proportion of the velocity retained each second rather than each frame
