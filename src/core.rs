@@ -1,4 +1,4 @@
-use std::{io::Error, ops::{Add, Div, Mul, MulAssign, Rem, RemAssign, Sub}};
+use std::{io::Error, ops::{Add, AddAssign, Div, Mul, MulAssign, Rem, RemAssign, Sub}};
 
 const DEFAULT: f32 = 0.0;
 const NEGATION: f32 = -1.0;
@@ -91,6 +91,14 @@ impl Add<&Vector3> for Vector3 {
             z: self.z + _rhs.z,
             pad: self.pad
         };
+    }
+}
+
+impl AddAssign<&Vector3> for Vector3 {
+    fn add_assign(&mut self, _rhs: &Vector3) {
+        self.x += _rhs.x;
+        self.y += _rhs.y;
+        self.z += _rhs.z;
     }
 }
 

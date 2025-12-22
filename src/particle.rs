@@ -20,6 +20,9 @@ pub struct Particle {
     /// infinite mass (immovable) than zero mass
     /// (completely unstable in numerical simulation).
     inverse_mass: f32,
+    /// Holds the acumulated force to be applied at the next simulation iteration only.
+    /// This value is zerored at each integration step
+    pub force_accum: Vector3
 }
 
 impl Particle {
@@ -36,7 +39,8 @@ impl Particle {
             acceleration,
             damping,
             mass,
-            inverse_mass: 1.0 / mass
+            inverse_mass: 1.0 / mass,
+            force_accum: Vector3::default()
         };
     }
     
@@ -51,7 +55,8 @@ impl Particle {
         
         // Work out the acceleration from the force.
         // (We'll add to this vector when we come to generate forces.)
-        let resulting_acc: Vector3 = self.acceleration;
+        let mut resulting_acc: Vector3 = self.acceleration;
+        resulting_acc.add_scaled_vector(&self.force_accum, duration);
         
         // Update the linear velocity from the acceleration
         self.velocity.add_scaled_vector(&resulting_acc, duration);
@@ -64,27 +69,60 @@ impl Particle {
     }
     
     pub fn clear_accumulator(&mut self) {
-        self.velocity = Vector3::default();
-        self.acceleration = Vector3::default();
+        self.force_accum = Vector3::default();
     }
     
     pub fn calculate_kinetic_energy(&self) -> f32 {
         return 0.5 * self.mass * self.velocity.square_magnitude();
     }
     
+    pub fn add_force(&mut self, force: Vector3) {
+        self.force_accum += &force;
+    }
+    
     pub fn set_mass(&mut self, mass: f32) {
         self.mass = mass;
     }
     
-    pub fn get_mass(&self) -> f32 {
-        return self.mass;
+    pub fn set_velocity(&mut self, x: f32, y: f32, z: f32) {
+        self.velocity = Vector3::new(x, y, z);
     }
-    
+
+    pub fn set_acceleration(&mut self, x: f32, y: f32, z: f32) {
+        self.acceleration = Vector3::new(x, y, z);
+    }
+
+    pub fn set_position(&mut self, x: f32, y: f32, z: f32) {
+        self.position = Vector3::new(x, y, z);
+    }
+
     pub fn set_inverse_mass(&mut self) {
         self.inverse_mass = 1.0 / self.mass;
     }
+
+    pub fn get_mass(&self) -> f32 {
+        return self.mass;
+    }
+
+    pub fn get_velocity(&self) -> Vector3 {
+        return self.velocity;
+    }
     
+
+    pub fn get_acceleration(&self) -> Vector3 {
+        return self.acceleration;
+    }
+
+
+    pub fn get_position(&self) -> Vector3 {
+        return self.position;
+    }
+
     pub fn get_inverse_mass(&self) -> f32 {
         return self.inverse_mass;
+    }
+    
+    pub fn has_finite_mass(&self) -> bool {
+        return self.mass > 0.0 && self.mass < f32::INFINITY;
     }
 }

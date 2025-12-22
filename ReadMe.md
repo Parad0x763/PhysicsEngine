@@ -195,3 +195,37 @@
     - [Rust-Docs_Instant](https://doc.rust-lang.org/std/time/struct.Instant.html)
 - Velocity: .i<sub>p</sub> = .<sub>p</sub>d^t + ..<sub>p</sub>t
     - where d is the damping for the object is now the proportion of the velocity retained each second rather than each frame
+
+
+## Adding General Forces
+
+### D'Alembert's Principle
+
+- This prinicple imples that is we have a set of forces acting on an object, we can replace all forces with a single force
+    - f = sum<subi</sub> (f<sub>i</sub>)
+    - We simply add the forces together using vector addition and apply the single force results
+
+### Force Generators
+
+- Some forces asrise because of the behavior of an object, such as dedicated drag
+
+#### Interfaces and Polymorphism
+
+- An *Interface* is a specification of methods, constants, data types, and execeptions / errors that will be exposed, typically a *class*
+
+##### Rust `Traits`
+
+- [Rust-Programming-Language: Traits](https://doc.rust-lang.org/book/ch10-02-traits.html)
+- A *trait* defines functionality a particular type has and can share with other types
+- ```pub trait Summary { fn summarize(&self) -> String; }```
+- ```impl Summary for SomeType { fn summarize(&self) -> String { return self.string_value; } }```
+
+### A Drag Force Generator
+
+- In game applications we use a simplified model of drag where the drag acting on the body depends on the speed of hte object and the square of its speed
+    - f<sub>drag</sub> = ^<sub>.<sub>p</sub></sub> ( k<sub>1</sub> |^<sub>.<sub>p</sub></sub>| + k<sub>2</sub> |^<sub>.<sub>p</sub></sub>|^2)
+    - where k<sub>1</sub> and k<sub>2</sub> are constants that characterize how strong the drag force is, usually called *drag coefficients*
+- The formula syas that the force acts in the opposite direction to the velocity of the object 
+    - ^<sub>.<sub>p</sub></sub> is the normalized velocity of the particle
+    - the strenght depends both on the speed of the object and the square of the speed
+- Drag that has a k<sub>2</sub> value will grow faster at higher speeds
