@@ -1,4 +1,4 @@
-use std::{io::Error, ops::{Add, AddAssign, Div, Mul, MulAssign, Rem, RemAssign, Sub}};
+use std::{io::Error, ops::{Add, AddAssign, Div, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign}};
 
 const DEFAULT: f32 = 0.0;
 const NEGATION: f32 = -1.0;
@@ -128,6 +128,14 @@ impl Sub<&Vector3> for Vector3 {
     }
 }
 
+impl SubAssign<&Vector3> for Vector3 {
+    fn sub_assign(&mut self, _rhs: &Vector3) {
+        self.x - _rhs.x;
+        self.y - _rhs.y;
+        self.z - _rhs.z;
+    }
+}
+
 impl RemAssign<&Vector3> for &mut Vector3 {
     fn rem_assign(&mut self, _rhs: &Vector3) {
         let temp: Vector3 = Vector3::new(self.x, self.y, self.z);
@@ -172,7 +180,7 @@ impl Vector3 {
 
     /// Returns the magnitude of the vector: Square Root of the Sum of the square of each axis
     pub fn magnitude(&self) -> f32 {
-        return f32::sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
+        return (self.x * self.x + self.y * self.y + self.z * self.z).sqrt();
     }
 
     /// Returns the square magnitude: Sum of the squares of each axis

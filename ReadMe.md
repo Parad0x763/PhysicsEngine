@@ -196,7 +196,6 @@
 - Velocity: .i<sub>p</sub> = .<sub>p</sub>d^t + ..<sub>p</sub>t
     - where d is the damping for the object is now the proportion of the velocity retained each second rather than each frame
 
-
 ## Adding General Forces
 
 ### D'Alembert's Principle
@@ -229,3 +228,88 @@
     - ^<sub>.<sub>p</sub></sub> is the normalized velocity of the particle
     - the strenght depends both on the speed of the object and the square of the speed
 - Drag that has a k<sub>2</sub> value will grow faster at higher speeds
+
+## Springs
+
+### Hook's Law
+
+- Hook discovered that the force exerted by a spring depends only on the distance the spring is extended or compressed
+- f = -k * delta_length
+    - where delta_length is the distance the spring is extended or compressed
+    - where k is the *spring constant*, a value that gives the stiffness of the spring
+- A spring extended twice as far from the rest position will exert twice the force
+- force given in this equation is felt at both ends of the spring, if two objects are connected by a spring, then
+    - they will each be attracted together by the same force given by the equation
+- In 3 dimensions, we need to generate a force vector rather than a scalar
+    - f = -k(|d| - l<sub>0</sub>)* ^<sub>d</sub>
+        - where *d* is the vector from one end of the spring to the other
+        - this vector points towards the object we're generatin a force for, give by:
+            - d = x<sub>A</sub> - x<sub>B</sub>
+            - where x<sub>A</sub> is the position of the end fo the spring attached to the object
+            - where x<sub>B</sub> is the position of the other end of the spring
+            
+### The Limit of Elasticity
+
+- Real springs only follow Hook's law within a range of lengths, called *limit of elasticity*
+- If a spring is stretched passed its *limit of elasticity* it will deform, likewise if it is compressed to much it will touch other rings on the spring
+
+## Spring-Like Force Generators
+
+### A Buoyancy Force Generator
+
+- A *buoyancy force* is what keeps an object afloat 
+- Archimedes first worked out that the buoyancy force is equal to the weight of the water that an object displaces
+- Forumla for the force of submersion:
+```
+f = 
+    { 0 when d <= 0
+    { vp when d >= 1
+    { dvp otherwise
+```
+- where *p* is the density of the liquid, *v* is the volumne of the object, *d* is the amount of the object that is submerged
+    - when fully submerged d = 1, when fully out of the water d = 0
+    - d = ( y<sub>o</sub> - y<sub>w</sub> - s) / 2s
+        - where *s* is the submersion debpth (depth object is completely sumbered)
+        - y<sub>o</sub> is the y coordinate of the object
+        - y<sub>w</sub> is the y coordinate of the liquid plane (assuming it is parallel to the XZ plane)
+
+## Stiff Springs
+
+### The Stiff Springs Problem
+
+- The force is converted into an acceleration: the acceleration of the end of the spring at that instant of time
+- this acceleration is then applied to the object for the entire time interval
+- this would be accurate if the object didn't move, if the spring was held at a constant extension over the entire time period
+
+### Faking Stiff Springs
+
+#### Harmonic Motion
+
+- A spring that has no friction or drag will oscillate forever
+- The position of each end of the spring obeys the equation: ..<sub>p</sub> = -X^2 * p
+- x = sqrt(k / m) where *k* is the spring constant, *m* is the mass
+- p<sub>t</sub> = p<sub>o</sub>cos(X^t) + (.<sub>p<sub>o</sub></sub> / X) * sin(X^t)
+    - where p<sub>o</sub> is the position of the end of the spring relative to the natural length
+    - .<sub>p<sub>o</sub></sub> is the velocity at the same time
+- We can subsitute the time interval we are interested in, into the previous equation and work out where the spring would end up if it were left to do its own thing
+- f = m * ..<sub>p</sub> would be the force to get to the final location, p<sub>t</sub>
+- and acceleration ..<sub>p</sub> is given by the following
+    - ..<sub>p</sub> = (p<sub>t</sub> - p<sub>o</sub>) * (1 / t^2) - .<sub>p<sub>o</sub></sub>
+    - NOTE: althougth the particle gets to the correct place, it doesn't necessarily get it there with the correct speed
+
+#### Damped Harmonic Motion
+
+- We can include the damping equations to give damped harmonic oscillator
+    - ..<sub>p</sub> = -kp - d.<sub>p</sub>
+    - Where *k* is the spring constant and *d* is the drag coefficients
+- Solving the differential equation gives an expression for the position at any time in the future
+    - p<sub>t</sub> = [p<sub>o</sub> * cos(yt) + c sin(yt)] * e^(-1/2 * dt)
+    - where *y* is a constant given by: y = 1/2 * sqrt(4k - d^2)
+    - and *c* is a constant give by: c = d / 2y * p<sub>o</sub> + 1 / y * .<sub>p<sub>o</sub></sub>
+    
+### Interacting with Other Forces
+
+- Another major limitation of the faked spring generator is the way it interacts with other forces
+- In practice, it is best to try to find a blend of techniques to get the effect you want
+- For springs that are intended to be kept extended (such as springs holding up the a rope bridge),
+    - fake spring forces would be to small
